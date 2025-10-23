@@ -15,11 +15,11 @@ export default function ChatRoom() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between p-4 bg-white shadow-md">
+    <div className="flex flex-col h-screen bg-gray-100">
+      {/* 상단 헤더 - 고정 */}
+      <div className="z-10 flex items-center justify-between flex-shrink-0 p-4 bg-white shadow-md">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">💬 실시간 채팅</h1>
+          <h1 className="text-2xl font-bold text-gray-800">실시간 채팅</h1>
           <p className="text-sm text-gray-500">{auth.currentUser.email}</p>
         </div>
         <button
@@ -30,10 +30,14 @@ export default function ChatRoom() {
         </button>
       </div>
 
-      {/* 채팅 영역 */}
-      <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto bg-white shadow-lg">
+      {/* 채팅 영역 - 가운데 스크롤 */}
+      <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto overflow-hidden bg-white shadow-lg">
         <MessageList onReply={handleReply} />
-        <MessageInput replyTo={replyTo} onCancelReply={handleCancelReply} />
+        
+        {/* 하단 입력창 - 고정 */}
+        <div className="flex-shrink-0">
+          <MessageInput replyTo={replyTo} onCancelReply={handleCancelReply} />
+        </div>
       </div>
     </div>
   );
