@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
 
 export default function MessageInput({ replyTo, onCancelReply }) {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const inputRef = useRef(null);
+
+  // 답장 모드로 전환되면 입력창에 포커스
+  useEffect(() => {
+    if (replyTo) {
+      inputRef.current?.focus();
+    }
+  }, [replyTo]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -34,6 +42,11 @@ export default function MessageInput({ replyTo, onCancelReply }) {
       
       setMessage('');
       onCancelReply(); // 답장 취소
+      
+      // 메시지 전송 후 입력창에 포커스
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
     } catch (error) {
       console.error('메시지 전송 실패:', error);
       alert('메시지 전송에 실패했습니다.');
@@ -68,13 +81,13 @@ export default function MessageInput({ replyTo, onCancelReply }) {
       <form onSubmit={handleSend} className="p-4">
         <div className="flex gap-2">
           <input
+            ref={inputRef}
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={replyTo ? "답장을 입력하세요..." : "메시지를 입력하세요..."}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={sending}
-            autoFocus
           />
           <button
             type="submit"
