@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/config';
 import Login from './components/Auth/Login';
-import SignUp from './components/Auth/SignUp';
 import ChatRoom from './components/Chat/ChatRoom';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showSignUp, setShowSignUp] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -28,11 +26,7 @@ function App() {
   }
 
   if (!user) {
-    return showSignUp ? (
-      <SignUp onToggle={() => setShowSignUp(false)} />
-    ) : (
-      <Login onToggle={() => setShowSignUp(true)} />
-    );
+    return <Login />;
   }
 
   return <ChatRoom />;

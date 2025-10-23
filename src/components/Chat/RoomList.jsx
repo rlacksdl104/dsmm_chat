@@ -52,7 +52,7 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
     <div className="flex flex-col w-64 text-white bg-gray-800">
       {/* 헤더 */}
       <div className="p-4 border-b border-gray-700">
-        <h2 className="text-xl font-bold">채팅방 목록</h2>
+        <h2 className="text-xl font-bold">채팅방 list</h2>
       </div>
 
       {/* 방 목록 */}

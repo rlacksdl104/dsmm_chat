@@ -2,11 +2,13 @@ import { useState } from 'react';
 import RoomList from './RoomList';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import MyPage from '../Profile/MyPage';
 import { auth } from '../../firebase/config';
 
 export default function ChatRoom() {
   const [currentRoom, setCurrentRoom] = useState(null);
   const [replyTo, setReplyTo] = useState(null);
+  const [showMyPage, setShowMyPage] = useState(false);
 
   const handleReply = (message) => {
     setReplyTo(message);
@@ -18,7 +20,7 @@ export default function ChatRoom() {
 
   const handleSelectRoom = (room) => {
     setCurrentRoom(room);
-    setReplyTo(null); // 방 변경 시 답장 초기화
+    setReplyTo(null);
   };
 
   return (
@@ -38,12 +40,20 @@ export default function ChatRoom() {
               {currentRoom?.description || auth.currentUser.email}
             </p>
           </div>
-          <button
-            onClick={() => auth.signOut()}
-            className="px-4 py-2 text-white transition bg-red-500 rounded-lg hover:bg-red-600"
-          >
-            로그아웃
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowMyPage(true)}
+              className="px-4 py-2 text-white transition bg-blue-500 rounded-lg hover:bg-blue-600"
+            >
+              마이페이지
+            </button>
+            <button
+              onClick={() => auth.signOut()}
+              className="px-4 py-2 text-white transition bg-red-500 rounded-lg hover:bg-red-600"
+            >
+              로그아웃
+            </button>
+          </div>
         </div>
 
         {/* 채팅 영역 */}
@@ -59,6 +69,9 @@ export default function ChatRoom() {
           </div>
         </div>
       </div>
+
+      {/* 마이페이지 모달 */}
+      {showMyPage && <MyPage onClose={() => setShowMyPage(false)} />}
     </div>
   );
 }
