@@ -79,12 +79,13 @@ export default function MessageList({ onReply }) {
                 {hoveredMessageId === msg.id && (
                   <button
                     onClick={() => onReply(msg)}
-                    className={`absolute -top-2 ${isMyMessage ? 'right-full mr-2' : 'left-full ml-2'} bg-gray-700 text-white text-xs px-2 py-1 rounded hover:bg-gray-800 transition`}
+                    className={`absolute top-3 ${
+                      isMyMessage ? 'right-full mr-2' : 'left-full ml-2'
+                    } bg-gray-700 text-white text-xs px-3 py-1 rounded whitespace-nowrap hover:bg-gray-800 transition shadow-lg`}
                   >
                     답장
                   </button>
                 )}
-
                 <div
                   className={`px-4 py-2 rounded-lg ${
                     isMyMessage
