@@ -9,15 +9,15 @@ export default function MessageInput({ replyTo, onCancelReply }) {
 
   useEffect(() => {
     if (replyTo) {
-      console.log('답장 모드 활성화 - 포커스 시도');
+      console.log('정상처리');
       const focusResult = inputRef.current?.focus();
       
       setTimeout(() => {
         if (document.activeElement !== inputRef.current) {
-          console.error('❌ 포커스 실패: 입력창에 포커스되지 않음');
+          console.error('실패: 입력창에 포커스되지 않음');
           console.log('현재 포커스된 요소:', document.activeElement);
         } else {
-          console.log('✅ 포커스 성공: 입력창에 포커스됨');
+          console.log('성공: 입력창에 포커스됨');
         }
       }, 100);
     }
