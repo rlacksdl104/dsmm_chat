@@ -7,10 +7,19 @@ export default function MessageInput({ replyTo, onCancelReply }) {
   const [sending, setSending] = useState(false);
   const inputRef = useRef(null);
 
-  // 답장 모드로 전환되면 입력창에 포커스
   useEffect(() => {
     if (replyTo) {
-      inputRef.current?.focus();
+      console.log('답장 모드 활성화 - 포커스 시도');
+      const focusResult = inputRef.current?.focus();
+      
+      setTimeout(() => {
+        if (document.activeElement !== inputRef.current) {
+          console.error('❌ 포커스 실패: 입력창에 포커스되지 않음');
+          console.log('현재 포커스된 요소:', document.activeElement);
+        } else {
+          console.log('✅ 포커스 성공: 입력창에 포커스됨');
+        }
+      }, 100);
     }
   }, [replyTo]);
 
@@ -29,7 +38,6 @@ export default function MessageInput({ replyTo, onCancelReply }) {
         createdAt: serverTimestamp(),
       };
 
-      // 답장 정보 추가
       if (replyTo) {
         messageData.replyTo = {
           id: replyTo.id,
@@ -41,23 +49,33 @@ export default function MessageInput({ replyTo, onCancelReply }) {
       await addDoc(collection(db, 'messages'), messageData);
       
       setMessage('');
-      onCancelReply(); // 답장 취소
+      onCancelReply();
       
-      // 메시지 전송 후 입력창에 포커스
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
+      console.log('메시지 전송 완료 - 포커스 시도');
     } catch (error) {
       console.error('메시지 전송 실패:', error);
       alert('메시지 전송에 실패했습니다.');
     } finally {
       setSending(false);
+      
+      // 포커스 시도
+      setTimeout(() => {
+        inputRef.current?.focus();
+        
+        // 포커스 확인
+        if (document.activeElement === inputRef.current) {
+          console.log('✅ 전송 후 포커스 성공');
+        } else {
+          console.error('❌ 전송 후 포커스 실패');
+          console.log('현재 포커스된 요소:', document.activeElement);
+          console.log('inputRef:', inputRef.current);
+        }
+      }, 100);
     }
   };
 
   return (
     <div className="bg-white border-t">
-      {/* 답장 미리보기 */}
       {replyTo && (
         <div className="flex items-start justify-between px-4 pt-3 pb-2 border-b bg-gray-50">
           <div className="flex-1">
@@ -77,7 +95,6 @@ export default function MessageInput({ replyTo, onCancelReply }) {
         </div>
       )}
 
-      {/* 입력창 */}
       <form onSubmit={handleSend} className="p-4">
         <div className="flex gap-2">
           <input
@@ -86,8 +103,9 @@ export default function MessageInput({ replyTo, onCancelReply }) {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={replyTo ? "답장을 입력하세요..." : "메시지를 입력하세요..."}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={sending}
+            autoFocus
           />
           <button
             type="submit"
