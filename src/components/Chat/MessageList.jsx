@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, where } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
 
-export default function MessageList({ onReply }) {
+export default function MessageList({ onReply, roomId }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
@@ -17,7 +17,6 @@ export default function MessageList({ onReply }) {
     const element = messageRefs.current[messageId];
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // 하이라이트 효과
       element.classList.add('bg-yellow-100');
       setTimeout(() => {
         element.classList.remove('bg-yellow-100');
@@ -26,8 +25,12 @@ export default function MessageList({ onReply }) {
   };
 
   useEffect(() => {
+    if (!roomId) return;
+
+    // roomId로 필터링된 메시지만 가져오기
     const q = query(
       collection(db, 'messages'),
+      where('roomId', '==', roomId),
       orderBy('createdAt', 'asc')
     );
 
@@ -42,22 +45,30 @@ export default function MessageList({ onReply }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  if (!roomId) {
+    return (
+      <div className="flex items-center justify-center flex-1 bg-gray-50">
+        <div className="text-gray-500">채팅방을 선택해주세요</div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center flex-1">
+      <div className="flex items-center justify-center flex-1 bg-gray-50">
         <div className="text-gray-500">메시지를 불러오는 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+    <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
       {messages.length === 0 ? (
         <div className="mt-8 text-center text-gray-500">
           아직 메시지가 없습니다. 첫 메시지를 보내보세요! 💬
@@ -75,17 +86,17 @@ export default function MessageList({ onReply }) {
               onMouseLeave={() => setHoveredMessageId(null)}
             >
               <div className="relative max-w-xs lg:max-w-md">
-                {/* 답장 버튼 */}
                 {hoveredMessageId === msg.id && (
                   <button
                     onClick={() => onReply(msg)}
-                    className={`absolute top-3 ${
+                    className={`absolute -top-2 ${
                       isMyMessage ? 'right-full mr-2' : 'left-full ml-2'
                     } bg-gray-700 text-white text-xs px-3 py-1 rounded whitespace-nowrap hover:bg-gray-800 transition shadow-lg`}
                   >
                     답장
                   </button>
                 )}
+
                 <div
                   className={`px-4 py-2 rounded-lg ${
                     isMyMessage
@@ -99,7 +110,6 @@ export default function MessageList({ onReply }) {
                     </div>
                   )}
 
-                  {/* 답장된 메시지 표시 */}
                   {msg.replyTo && (
                     <div
                       onClick={() => scrollToMessage(msg.replyTo.id)}

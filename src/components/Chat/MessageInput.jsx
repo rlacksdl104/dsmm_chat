@@ -2,22 +2,22 @@ import { useState, useRef, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
 
-export default function MessageInput({ replyTo, onCancelReply }) {
+export default function MessageInput({ replyTo, onCancelReply, roomId }) {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
     if (replyTo) {
-      console.log('정상처리');
+      console.log('답장 모드 활성화 - 포커스 시도');
       const focusResult = inputRef.current?.focus();
       
       setTimeout(() => {
         if (document.activeElement !== inputRef.current) {
-          console.error('실패: 입력창에 포커스되지 않음');
+          console.error('❌ 포커스 실패: 입력창에 포커스되지 않음');
           console.log('현재 포커스된 요소:', document.activeElement);
         } else {
-          console.log('성공: 입력창에 포커스됨');
+          console.log('✅ 포커스 성공: 입력창에 포커스됨');
         }
       }, 100);
     }
@@ -26,7 +26,7 @@ export default function MessageInput({ replyTo, onCancelReply }) {
   const handleSend = async (e) => {
     e.preventDefault();
     
-    if (!message.trim()) return;
+    if (!message.trim() || !roomId) return;
 
     setSending(true);
 
@@ -35,6 +35,7 @@ export default function MessageInput({ replyTo, onCancelReply }) {
         text: message,
         userId: auth.currentUser.uid,
         userEmail: auth.currentUser.email,
+        roomId: roomId,
         createdAt: serverTimestamp(),
       };
 
@@ -58,11 +59,9 @@ export default function MessageInput({ replyTo, onCancelReply }) {
     } finally {
       setSending(false);
       
-      // 포커스 시도
       setTimeout(() => {
         inputRef.current?.focus();
         
-        // 포커스 확인
         if (document.activeElement === inputRef.current) {
           console.log('✅ 전송 후 포커스 성공');
         } else {
@@ -104,12 +103,12 @@ export default function MessageInput({ replyTo, onCancelReply }) {
             onChange={(e) => setMessage(e.target.value)}
             placeholder={replyTo ? "답장을 입력하세요..." : "메시지를 입력하세요..."}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            disabled={sending}
+            disabled={sending || !roomId}
             autoFocus
           />
           <button
             type="submit"
-            disabled={sending || !message.trim()}
+            disabled={sending || !message.trim() || !roomId}
             className="px-6 py-2 text-white transition bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sending ? '전송 중...' : '전송'}
