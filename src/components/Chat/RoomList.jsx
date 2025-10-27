@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-
-const MASTER_PASSWORD = 'admin1234';
+const MASTER_PASSWORD = import.meta.env.VITE_MASTER_PASSWORD;
 
 export default function RoomList({ currentRoom, onSelectRoom }) {
   const [rooms, setRooms] = useState([]);
@@ -14,6 +13,10 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
   const [passwordCheckRoom, setPasswordCheckRoom] = useState(null);
 
   useEffect(() => {
+    if (!MASTER_PASSWORD) {
+      console.warn('⚠️ 마스터 패스워드가 설정되지 않았습니다!');
+    }
+    
     const q = query(collection(db, 'rooms'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const roomsData = [];
@@ -64,7 +67,7 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
 
     try {
       // 마스터 비밀번호 확인
-      if (passwordInput === MASTER_PASSWORD) {
+      if (MASTER_PASSWORD && passwordInput === MASTER_PASSWORD) {
         const roomRef = doc(db, 'rooms', passwordCheckRoom.id);
         const roomSnap = await getDoc(roomRef);
         if (roomSnap.exists()) {
