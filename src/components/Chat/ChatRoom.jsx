@@ -24,14 +24,14 @@ export default function ChatRoom() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-black-100">
       {/* 최상단 헤더 - 댈래그램 */}
       <div className="flex-shrink-0 text-white shadow-lg bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="text-3xl">💬</div>
             <div>
-              <h1 className="text-2xl font-bold">Delegram</h1>
+              <h1 className="text-2xl font-bold">DeChat</h1>
               <p className="text-sm text-blue-100">실시간 채팅 플랫폼</p>
             </div>
           </div>
@@ -42,7 +42,7 @@ export default function ChatRoom() {
               <div className="text-sm font-semibold">
                 {auth.currentUser.displayName || auth.currentUser.email.split('@')[0]}
               </div>
-              <div className="text-xs text-blue-100">
+              <div className="text-xs text-black-100">
                 {auth.currentUser.email}
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function ChatRoom() {
           </div>
 
           {/* 채팅 영역 */}
-          <div className="flex flex-col flex-1 overflow-hidden bg-white">
+          <div className="flex flex-col flex-1 overflow-hidden bg-black">
             <MessageList onReply={handleReply} roomId={currentRoom?.id} />
             
             <div className="flex-shrink-0">

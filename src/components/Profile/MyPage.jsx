@@ -33,6 +33,7 @@ export default function MyPage({ onClose }) {
   };
 
   const handleSave = async (e) => {
+    console.log('현재 유저:', auth.currentUser);
     e.preventDefault();
     
     if (!displayName.trim()) {
