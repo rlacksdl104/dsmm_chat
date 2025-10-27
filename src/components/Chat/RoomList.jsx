@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
+const MASTER_PASSWORD = 'admin1234';
+
 export default function RoomList({ currentRoom, onSelectRoom }) {
   const [rooms, setRooms] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -61,6 +63,20 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
     if (!passwordInput.trim()) return;
 
     try {
+      // 마스터 비밀번호 확인
+      if (passwordInput === MASTER_PASSWORD) {
+        const roomRef = doc(db, 'rooms', passwordCheckRoom.id);
+        const roomSnap = await getDoc(roomRef);
+        if (roomSnap.exists()) {
+          onSelectRoom({ id: passwordCheckRoom.id, ...roomSnap.data() });
+          setPasswordCheckRoom(null);
+          setPasswordInput('');
+          alert('🔑 마스터 비밀번호로 입장했습니다!');
+        }
+        return;
+      }
+
+      // 일반 비밀번호 확인
       const roomRef = doc(db, 'rooms', passwordCheckRoom.id);
       const roomSnap = await getDoc(roomRef);
       if (roomSnap.exists()) {
@@ -118,7 +134,7 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
           <div className="p-6 text-gray-800 bg-white rounded-lg w-96">
             <h3 className="mb-4 text-xl font-bold">새 채팅방 만들기</h3>
 
-            <form onSubmit={handleCreateRoom} className="space-y-4">
+            <div className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium">방 이름 *</label>
                 <input
@@ -127,8 +143,8 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
                   onChange={(e) => setNewRoomName(e.target.value)}
                   placeholder="예: 일상 대화"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
                   autoFocus
+                  onKeyPress={(e) => e.key === 'Enter' && handleCreateRoom(e)}
                 />
               </div>
 
@@ -168,13 +184,14 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
                   취소
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleCreateRoom}
                   className="flex-1 py-2 text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   만들기
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
@@ -183,8 +200,11 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-6 text-gray-800 bg-white rounded-lg w-96">
             <h3 className="mb-4 text-xl font-bold">비밀번호 확인</h3>
+            <p className="mb-4 text-sm text-gray-500">
+              비밀번호를 입력하세요
+            </p>
 
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div className="space-y-4">
               <input
                 type="password"
                 value={passwordInput}
@@ -192,6 +212,7 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
                 placeholder="비밀번호를 입력하세요"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 autoFocus
+                onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit(e)}
               />
 
               <div className="flex gap-2">
@@ -206,13 +227,14 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
                   취소
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handlePasswordSubmit}
                   className="flex-1 py-2 text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   확인
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
