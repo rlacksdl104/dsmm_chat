@@ -132,20 +132,83 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
           {message.length}/100
         </div>
 
-        {showGuide && (
-          <div className="p-3 mt-3 text-xs rounded-lg bg-gray-50">
-            <div className="mb-2 font-semibold text-gray-700">마크다운 문법 가이드</div>
-            <div className="space-y-1 text-gray-600">
-              <div>**굵게** → <strong>굵게</strong></div>
-              <div>*기울임* → <em>기울임</em></div>
-              <div>~~취소선~~ → <del>취소선</del></div>
-              <div>`코드` → <code className="px-1 bg-gray-200 rounded">코드</code></div>
-              <div>[링크](url) → 링크</div>
-              <div># 제목 → 제목</div>
-              <div>&gt; 인용 → 인용문</div>
+        {/* 마크다운 가이드 */}
+{showGuide && (
+  <div className="p-3 mt-3 text-xs border border-gray-200 rounded-lg bg-gray-50">
+    <div className="flex items-center gap-2 mb-2 font-semibold text-gray-700">
+      📝 마크다운 문법 가이드
+    </div>
+    <div className="grid grid-cols-2 text-gray-600 gap-x-4 gap-y-2">
+      <div>
+        <code className="text-pink-600">**굵게**</code>
+        <span className="mx-2">→</span>
+        <strong>굵게</strong>
+      </div>
+      <div>
+        <code className="text-pink-600">*기울임*</code>
+        <span className="mx-2">→</span>
+        <em>기울임</em>
+      </div>
+      <div>
+        <code className="text-pink-600">~~취소선~~</code>
+        <span className="mx-2">→</span>
+        <del>취소선</del>
+      </div>
+      <div>
+        <code className="text-pink-600">`코드`</code>
+        <span className="mx-2">→</span>
+        <code className="px-1 bg-gray-200 rounded">코드</code>
+      </div>
+      <div>
+        <code className="text-pink-600">[링크](url)</code>
+        <span className="mx-2">→</span>
+        <span className="text-blue-600 underline">링크</span>
+      </div>
+      <div>
+        <code className="text-pink-600"># 제목</code>
+        <span className="mx-2">→</span>
+        <span className="font-bold">제목</span>
+      </div>
+      <div>
+        <code className="text-pink-600">- 리스트</code>
+        <span className="mx-2">→</span>
+        <span>• 리스트</span>
+      </div>
+      <div>
+        <code className="text-pink-600">&gt; 인용</code>
+        <span className="mx-2">→</span>
+        <span className="pl-1 border-l-2 border-gray-400">인용</span>
+      </div>
+    </div>
+        {/* 메시지 조작 가이드 추가 */}
+        <div className="pt-3 mt-3 border-t border-gray-300">
+          <div className="mb-2 font-semibold text-gray-700">
+            💡 메시지 조작
+          </div>
+          <div className="space-y-1 text-gray-600">
+            <div className="flex items-start gap-2">
+              <span className="font-semibold min-w-[80px]">더블클릭:</span>
+              <span>수정</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-semibold min-w-[80px]">2초간 누르기:</span>
+              <span>삭제</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-semibold min-w-[80px]">마우스 호버:</span>
+              <span>답장 버튼 표시</span>
             </div>
           </div>
-        )}
+        </div>
+        
+        <div className="pt-2 mt-2 text-gray-500 border-t border-gray-300">
+          💡 줄바꿈: <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Shift + Enter</kbd>
+        </div>
+        <div className="mt-1 text-gray-500">
+          💡 코드 블록: ``` 언어명 으로 시작하고 ``` 으로 끝내기
+        </div>
+      </div>
+    )}
 
         <div className="mt-2 text-xs text-gray-500">
           Enter: 전송
