@@ -156,7 +156,7 @@ export default function MessageList({ onReply, roomId }) {
       }`}>
         <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
           채팅방을 선택해주세요
-        </div>
+        </div>  
       </div>
     );
   }
@@ -174,7 +174,7 @@ export default function MessageList({ onReply, roomId }) {
   }
 
   return (
-    <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50">
+    <div className={`flex-1 p-4 space-y-4 overflow-y-auto ${ isDark ? 'bg-black' : 'bg-white'}`}>
       {messages.length === 0 ? (
         <div className="mt-8 text-center text-gray-500">
           아직 메시지가 없습니다. 첫 메시지를 보내보세요! 💬
@@ -231,7 +231,7 @@ export default function MessageList({ onReply, roomId }) {
                 >
                   {/* 길게 누르기 프로그레스 바 */}
                   {isLongPressing && (
-                    <div className="absolute inset-0 transition-all duration-100 bg-red-500 opacity-20"
+                    <div className="absolute inset-0 transition-all duration-300 bg-red-500 opacity-20"
                          style={{ width: `${longPressProgress}%` }}>
                     </div>
                   )}
@@ -280,8 +280,8 @@ export default function MessageList({ onReply, roomId }) {
                         onChange={(e) => setEditText(e.target.value)}
                         className={`w-full px-2 py-1 text-sm rounded border resize-none ${
                           isDark
-                            ? 'bg-gray-700 text-white border-gray-600 focus:ring-blue-500'
-                            : 'bg-white text-gray-800 border-gray-300 focus:ring-blue-500'
+                            ? 'bg-gray-700 text-white  focus:ring-blue-500'
+                            : 'bg-white text-gray-800 focus:ring-blue-500'
                         } focus:ring-2 focus:border-transparent`}
                         rows={3}
                         autoFocus
@@ -405,7 +405,7 @@ export default function MessageList({ onReply, roomId }) {
                   {/* 길게 누르기 안내 */}
                   {isLongPressing && longPressProgress < 50 && (
                     <div className="absolute z-20 px-3 py-1 text-xs text-white -translate-x-1/2 -translate-y-1/2 bg-red-600 rounded shadow-lg top-1/2 left-1/2 whitespace-nowrap">
-                      🗑️ 삭제하려면 계속 누르세요...
+                      🗑️ 삭제
                     </div>
                   )}
                 </div>

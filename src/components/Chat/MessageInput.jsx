@@ -64,7 +64,7 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
   };
 
   return (
-    <div className="bg-white border-t">
+    <div className="bg-white">
       {replyTo && (
         <div className="flex items-start justify-between px-4 pt-3 pb-2 border-b bg-gray-50">
           <div className="flex-1">
@@ -101,7 +101,7 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
               }
             }}
             placeholder={replyTo ? '답장을 입력해주세요' : '메시지 입력'}
-            className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${ isDark ? 'bg-black text-white' : 'bg-white text-black'}`}
+            className={`flex-1 px-4 py-2 rounded-lg outline-none resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${ isDark ? 'bg-black text-white' : 'bg-white text-black'}`}
             disabled={sending || !roomId}
             autoFocus
             rows={1}
@@ -136,7 +136,7 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
 
         {/* 마크다운 가이드 */}
 {showGuide && (
-  <div className="p-3 mt-3 text-xs border border-gray-200 rounded-lg bg-gray-50">
+  <div className={`p-3 mt-3 text-xs border border-gray-200 rounded-lg ${ isDark ? 'bg-black' : 'bg-white'}`}>
     <div className="flex items-center gap-2 mb-2 font-semibold text-gray-700">
       📝 마크다운 문법 가이드
     </div>
