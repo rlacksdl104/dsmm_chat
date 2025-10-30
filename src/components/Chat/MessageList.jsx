@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { collection, query, orderBy, onSnapshot, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
+import { useTheme } from '../../contexts/ThemeContexts';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -17,6 +18,7 @@ export default function MessageList({ onReply, roomId }) {
   const messageRefs = useRef({});
   const longPressTimerRef = useRef(null);
   const progressIntervalRef = useRef(null);
+  const { isDark } = useTheme(); // ← 이 줄도 확인
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -149,16 +151,24 @@ export default function MessageList({ onReply, roomId }) {
 
   if (!roomId) {
     return (
-      <div className="flex items-center justify-center flex-1 bg-gray-50">
-        <div className="text-gray-500">채팅방을 선택해주세요</div>
+      <div className={`flex-1 flex items-center justify-center ${
+        isDark ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
+        <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+          채팅방을 선택해주세요
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center flex-1 bg-gray-50">
-        <div className="text-gray-500">메시지를 불러오는 중...</div>
+      <div className={`flex-1 flex items-center justify-center ${
+        isDark ? 'bg-gray-900' : 'bg-gray-50'
+      }`}>
+        <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+          메시지를 불러오는 중...
+        </div>
       </div>
     );
   }
@@ -184,14 +194,18 @@ export default function MessageList({ onReply, roomId }) {
               onMouseLeave={() => setHoveredMessageId(null)}
             >
               <div className="relative max-w-xs lg:max-w-md">
-                {/* 답장 버튼만 표시 */}
+                {/* 답장 버튼 */}
                 {hoveredMessageId === msg.id && !isEditing && (
                   <div className={`absolute top-1/2 -translate-y-1/2 ${
                     isMyMessage ? 'right-full mr-2' : 'left-full ml-2'
                   }`}>
                     <button
                       onClick={() => onReply(msg)}
-                      className="px-3 py-1 text-xs text-white transition bg-gray-700 rounded shadow-lg hover:bg-gray-800 whitespace-nowrap"
+                      className={`text-white text-xs px-3 py-1 rounded transition shadow-lg whitespace-nowrap ${
+                        isDark 
+                          ? 'bg-gray-700 hover:bg-gray-600' 
+                          : 'bg-gray-700 hover:bg-gray-800'
+                      }`}
                     >
                       답장
                     </button>
@@ -201,8 +215,12 @@ export default function MessageList({ onReply, roomId }) {
                 <div
                   className={`px-4 py-2 rounded-lg relative overflow-hidden ${
                     isMyMessage
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-800'
+                      ? isDark 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-blue-500 text-white'
+                      : isDark 
+                        ? 'bg-gray-800 text-gray-100' 
+                        : 'bg-gray-200 text-gray-800'
                   } ${isMyMessage ? 'cursor-pointer select-none' : ''}`}
                   onDoubleClick={() => handleDoubleClick(msg)}
                   onMouseDown={() => isMyMessage && handleMouseDown(msg)}
@@ -229,14 +247,26 @@ export default function MessageList({ onReply, roomId }) {
                       onClick={() => scrollToMessage(msg.replyTo.id)}
                       className={`mb-2 p-2 rounded border-l-2 cursor-pointer relative z-10 ${
                         isMyMessage
-                          ? 'bg-blue-600 border-blue-300'
-                          : 'bg-gray-300 border-gray-500'
+                          ? isDark 
+                            ? 'bg-blue-700 border-blue-400' 
+                            : 'bg-blue-600 border-blue-300'
+                          : isDark 
+                            ? 'bg-gray-700 border-gray-500' 
+                            : 'bg-gray-300 border-gray-500'
                       }`}
                     >
-                      <div className={`text-xs font-semibold ${isMyMessage ? 'text-blue-100' : 'text-gray-600'}`}>
+                      <div className={`text-xs font-semibold ${
+                        isMyMessage 
+                          ? 'text-blue-100' 
+                          : isDark ? 'text-gray-300' : 'text-gray-600'
+                      }`}>
                         {msg.replyTo.displayName || msg.replyTo.userEmail}
                       </div>
-                      <div className={`text-xs ${isMyMessage ? 'text-blue-100' : 'text-gray-600'} line-clamp-2`}>
+                      <div className={`text-xs line-clamp-2 ${
+                        isMyMessage 
+                          ? 'text-blue-100' 
+                          : isDark ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
                         {msg.replyTo.text}
                       </div>
                     </div>
@@ -248,7 +278,11 @@ export default function MessageList({ onReply, roomId }) {
                       <textarea
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
-                        className="w-full px-2 py-1 text-sm text-gray-800 bg-white border border-gray-300 rounded resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className={`w-full px-2 py-1 text-sm rounded border resize-none ${
+                          isDark
+                            ? 'bg-gray-700 text-white border-gray-600 focus:ring-blue-500'
+                            : 'bg-white text-gray-800 border-gray-300 focus:ring-blue-500'
+                        } focus:ring-2 focus:border-transparent`}
                         rows={3}
                         autoFocus
                         onKeyDown={(e) => {
@@ -268,7 +302,11 @@ export default function MessageList({ onReply, roomId }) {
                         </button>
                         <button
                           onClick={handleCancelEdit}
-                          className="px-3 py-1 text-xs text-white transition bg-gray-600 rounded hover:bg-gray-700"
+                          className={`px-3 py-1 text-white text-xs rounded transition ${
+                            isDark 
+                              ? 'bg-gray-700 hover:bg-gray-600' 
+                              : 'bg-gray-600 hover:bg-gray-700'
+                          }`}
                         >
                           취소 (Esc)
                         </button>
@@ -276,11 +314,15 @@ export default function MessageList({ onReply, roomId }) {
                     </div>
                   ) : (
                     <>
-                      {/* 마크다운 렌더링 */}
+                      {/* 마크다운 렌더링 - 코드는 동일 */}
                       <div className={`markdown-content break-words relative z-10 ${
-                        isMyMessage ? 'text-white' : 'text-gray-800'
+                        isMyMessage 
+                          ? 'text-white' 
+                          : isDark ? 'text-gray-100' : 'text-gray-800'
                       }`}>
-                        <ReactMarkdown
+                        {/* ReactMarkdown 코드는 동일 */}
+                      </div>
+                                              <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkBreaks]}
                           components={{
                             a: ({node, ...props}) => (
@@ -339,28 +381,31 @@ export default function MessageList({ onReply, roomId }) {
                         >
                           {msg.text}
                         </ReactMarkdown>
-                      </div>
 
-                      {/* 수정됨 표시 */}
-                      {msg.isEdited && (
-                        <div className={`text-xs mt-1 italic relative z-10 ${isMyMessage ? 'text-blue-100' : 'text-gray-500'}`}>
-                          (수정됨)
-                        </div>
-                      )}
                     </>
                   )}
 
-                  <div className={`text-xs mt-1 relative z-10 ${isMyMessage ? 'text-blue-100' : 'text-gray-500'}`}>
-                    {msg.createdAt?.toDate().toLocaleTimeString('ko-KR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </div>
+                  {/* 시간 표시 */}
+                  {hoveredMessageId === msg.id && !isEditing && (
+                    <div className={`text-xs mt-1 relative z-10 ${
+                      isMyMessage 
+                        ? 'text-blue-100' 
+                        : isDark ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
+                      {msg.createdAt?.toDate().toLocaleTimeString('ko-KR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                      {msg.isEdited && (
+                        <span className="ml-1 italic">(수정됨)</span>
+                      )}
+                    </div>
+                  )}
 
-                  {/* 길게 누르기 안내 (처음 1초만 표시) */}
-                  {isLongPressing && longPressProgress < 30 && (
+                  {/* 길게 누르기 안내 */}
+                  {isLongPressing && longPressProgress < 50 && (
                     <div className="absolute z-20 px-3 py-1 text-xs text-white -translate-x-1/2 -translate-y-1/2 bg-red-600 rounded shadow-lg top-1/2 left-1/2 whitespace-nowrap">
-                      삭제중
+                      🗑️ 삭제하려면 계속 누르세요...
                     </div>
                   )}
                 </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase/config';
+import { ThemeProvider } from './contexts/ThemeContexts';
 import Login from './components/Auth/Login';
 import ChatRoom from './components/Chat/ChatRoom';
 
@@ -19,17 +20,17 @@ function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-2xl text-gray-600">로딩 중...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+        <div className="text-2xl text-gray-400">로딩 중...</div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Login />;
-  }
-
-  return <ChatRoom />;
+  return (
+    <ThemeProvider>
+      {!user ? <Login /> : <ChatRoom />}
+    </ThemeProvider>
+  );
 }
 
 export default App;

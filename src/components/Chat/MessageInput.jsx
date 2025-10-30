@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../../firebase/config';
+import { useTheme } from '../../contexts/ThemeContexts';
 
 export default function MessageInput({ replyTo, onCancelReply, roomId }) {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const inputRef = useRef(null);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     if (replyTo) {
@@ -82,7 +84,7 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
         </div>
       )}
 
-      <form onSubmit={handleSend} className="p-4">
+      <form onSubmit={handleSend} className={`p-4 ${ isDark ? 'bg-black' : 'bg-white'}`}>
         <div className="flex gap-2">
           <textarea
             ref={inputRef}
@@ -99,7 +101,7 @@ export default function MessageInput({ replyTo, onCancelReply, roomId }) {
               }
             }}
             placeholder={replyTo ? '답장을 입력해주세요' : '메시지 입력'}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${ isDark ? 'bg-black text-white' : 'bg-white text-black'}`}
             disabled={sending || !roomId}
             autoFocus
             rows={1}
