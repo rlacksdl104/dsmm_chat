@@ -18,7 +18,7 @@ export default function MessageList({ onReply, roomId }) {
   const messageRefs = useRef({});
   const longPressTimerRef = useRef(null);
   const progressIntervalRef = useRef(null);
-  const { isDark } = useTheme(); // ← 이 줄도 확인
+  const { isDark } = useTheme();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,7 +61,6 @@ export default function MessageList({ onReply, roomId }) {
     scrollToBottom();
   }, [messages]);
 
-  // 더블클릭으로 수정 시작
   const handleDoubleClick = (msg) => {
     if (msg.userId === auth.currentUser.uid) {
       setEditingMessageId(msg.id);
@@ -69,7 +68,6 @@ export default function MessageList({ onReply, roomId }) {
     }
   };
 
-  // 길게 누르기 시작
   const handleMouseDown = (msg) => {
     if (msg.userId !== auth.currentUser.uid) return;
 
@@ -88,7 +86,6 @@ export default function MessageList({ onReply, roomId }) {
     }, 1000);
   };
 
-  // 길게 누르기 취소
   const handleMouseUp = () => {
     clearLongPress();
   };
@@ -110,7 +107,6 @@ export default function MessageList({ onReply, roomId }) {
     setLongPressProgress(0);
   };
 
-  // 메시지 수정 저장
   const handleSaveEdit = async (msgId) => {
     if (!editText.trim()) {
       alert('메시지 내용을 입력해주세요.');
@@ -124,7 +120,6 @@ export default function MessageList({ onReply, roomId }) {
         editedAt: new Date(),
         isEdited: true,
       });
-      
       setEditingMessageId(null);
       setEditText('');
     } catch (error) {
@@ -133,13 +128,11 @@ export default function MessageList({ onReply, roomId }) {
     }
   };
 
-  // 메시지 수정 취소
   const handleCancelEdit = () => {
     setEditingMessageId(null);
     setEditText('');
   };
 
-  // 메시지 삭제
   const handleDelete = async (msgId) => {
     try {
       await deleteDoc(doc(db, 'messages', msgId));
@@ -151,9 +144,7 @@ export default function MessageList({ onReply, roomId }) {
 
   if (!roomId) {
     return (
-      <div className={`flex-1 flex items-center justify-center ${
-        isDark ? 'bg-gray-900' : 'bg-gray-50'
-      }`}>
+      <div className={`flex-1 flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
           채팅방을 선택해주세요
         </div>  
@@ -163,9 +154,7 @@ export default function MessageList({ onReply, roomId }) {
 
   if (loading) {
     return (
-      <div className={`flex-1 flex items-center justify-center ${
-        isDark ? 'bg-gray-900' : 'bg-gray-50'
-      }`}>
+      <div className={`flex-1 flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <div className={isDark ? 'text-gray-400' : 'text-gray-500'}>
           메시지를 불러오는 중...
         </div>
@@ -174,17 +163,17 @@ export default function MessageList({ onReply, roomId }) {
   }
 
   return (
-    <div className={`flex-1 p-4 space-y-4 overflow-y-auto ${ isDark ? 'bg-black' : 'bg-white'}`}>
+    <div className={`flex-1 p-4 space-y-4 overflow-y-auto ${isDark ? 'bg-black' : 'bg-white'}`}>
       {messages.length === 0 ? (
         <div className="mt-8 text-center text-gray-500">
-          아직 메시지가 없습니다. 첫 메시지를 보내보세요! 💬
+          아직 메시지가 없습니다. 첫 메시지를 보내보세요 💬
         </div>
       ) : (
         messages.map((msg) => {
           const isMyMessage = msg.userId === auth.currentUser.uid;
           const isEditing = editingMessageId === msg.id;
           const isLongPressing = longPressMessageId === msg.id;
-          
+
           return (
             <div
               key={msg.id}
@@ -194,17 +183,12 @@ export default function MessageList({ onReply, roomId }) {
               onMouseLeave={() => setHoveredMessageId(null)}
             >
               <div className="relative max-w-xs lg:max-w-md">
-                {/* 답장 버튼 */}
                 {hoveredMessageId === msg.id && !isEditing && (
-                  <div className={`absolute top-1/2 -translate-y-1/2 ${
-                    isMyMessage ? 'right-full mr-2' : 'left-full ml-2'
-                  }`}>
+                  <div className={`absolute top-1/2 -translate-y-1/2 ${isMyMessage ? 'right-full mr-2' : 'left-full ml-2'}`}>
                     <button
                       onClick={() => onReply(msg)}
                       className={`text-white text-xs px-3 py-1 rounded transition shadow-lg whitespace-nowrap ${
-                        isDark 
-                          ? 'bg-gray-700 hover:bg-gray-600' 
-                          : 'bg-gray-700 hover:bg-gray-800'
+                        isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-700 hover:bg-gray-800'
                       }`}
                     >
                       답장
@@ -215,12 +199,8 @@ export default function MessageList({ onReply, roomId }) {
                 <div
                   className={`px-4 py-2 rounded-lg relative overflow-hidden ${
                     isMyMessage
-                      ? isDark 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-blue-500 text-white'
-                      : isDark 
-                        ? 'bg-gray-800 text-gray-100' 
-                        : 'bg-gray-200 text-gray-800'
+                      ? isDark ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+                      : isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-800'
                   } ${isMyMessage ? 'cursor-pointer select-none' : ''}`}
                   onDoubleClick={() => handleDoubleClick(msg)}
                   onMouseDown={() => isMyMessage && handleMouseDown(msg)}
@@ -229,7 +209,6 @@ export default function MessageList({ onReply, roomId }) {
                   onTouchStart={() => isMyMessage && handleMouseDown(msg)}
                   onTouchEnd={handleMouseUp}
                 >
-                  {/* 길게 누르기 프로그레스 바 */}
                   {isLongPressing && (
                     <div className="absolute inset-0 transition-all duration-300 bg-red-500 opacity-20"
                          style={{ width: `${longPressProgress}%` }}>
@@ -247,32 +226,23 @@ export default function MessageList({ onReply, roomId }) {
                       onClick={() => scrollToMessage(msg.replyTo.id)}
                       className={`mb-2 p-2 rounded border-l-2 cursor-pointer relative z-10 ${
                         isMyMessage
-                          ? isDark 
-                            ? 'bg-blue-700 border-blue-400' 
-                            : 'bg-blue-600 border-blue-300'
-                          : isDark 
-                            ? 'bg-gray-700 border-gray-500' 
-                            : 'bg-gray-300 border-gray-500'
+                          ? isDark ? 'bg-blue-700 border-blue-400' : 'bg-blue-600 border-blue-300'
+                          : isDark ? 'bg-gray-700 border-gray-500' : 'bg-gray-300 border-gray-500'
                       }`}
                     >
                       <div className={`text-xs font-semibold ${
-                        isMyMessage 
-                          ? 'text-blue-100' 
-                          : isDark ? 'text-gray-300' : 'text-gray-600'
+                        isMyMessage ? 'text-blue-100' : isDark ? 'text-gray-300' : 'text-gray-600'
                       }`}>
                         {msg.replyTo.displayName || msg.replyTo.userEmail}
                       </div>
                       <div className={`text-xs line-clamp-2 ${
-                        isMyMessage 
-                          ? 'text-blue-100' 
-                          : isDark ? 'text-gray-400' : 'text-gray-600'
+                        isMyMessage ? 'text-blue-100' : isDark ? 'text-gray-400' : 'text-gray-600'
                       }`}>
                         {msg.replyTo.text}
                       </div>
                     </div>
                   )}
 
-                  {/* 수정 모드 */}
                   {isEditing ? (
                     <div className="relative z-10 space-y-2">
                       <textarea
@@ -280,7 +250,7 @@ export default function MessageList({ onReply, roomId }) {
                         onChange={(e) => setEditText(e.target.value)}
                         className={`w-full px-2 py-1 text-sm rounded border resize-none ${
                           isDark
-                            ? 'bg-gray-700 text-white  focus:ring-blue-500'
+                            ? 'bg-gray-700 text-white focus:ring-blue-500'
                             : 'bg-white text-gray-800 focus:ring-blue-500'
                         } focus:ring-2 focus:border-transparent`}
                         rows={3}
@@ -303,9 +273,7 @@ export default function MessageList({ onReply, roomId }) {
                         <button
                           onClick={handleCancelEdit}
                           className={`px-3 py-1 text-white text-xs rounded transition ${
-                            isDark 
-                              ? 'bg-gray-700 hover:bg-gray-600' 
-                              : 'bg-gray-600 hover:bg-gray-700'
+                            isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-600 hover:bg-gray-700'
                           }`}
                         >
                           취소 (Esc)
@@ -314,95 +282,34 @@ export default function MessageList({ onReply, roomId }) {
                     </div>
                   ) : (
                     <>
-                      {/* 마크다운 렌더링 - 코드는 동일 */}
                       <div className={`markdown-content break-words relative z-10 ${
-                        isMyMessage 
-                          ? 'text-white' 
-                          : isDark ? 'text-gray-100' : 'text-gray-800'
+                        isMyMessage ? 'text-white' : isDark ? 'text-gray-100' : 'text-gray-800'
                       }`}>
-                        {/* ReactMarkdown 코드는 동일 */}
-                      </div>
-                                              <ReactMarkdown
+                        <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkBreaks]}
                           components={{
-                            a: ({node, ...props}) => (
-                              <a 
-                                {...props} 
+                            a: ({ node, ...props }) => (
+                              <a {...props}
                                 className={`underline ${isMyMessage ? 'text-blue-100' : 'text-blue-600'} hover:opacity-80`}
-                                target="_blank" 
-                                rel="noopener noreferrer"
+                                target="_blank" rel="noopener noreferrer"
                               />
                             ),
-                            code: ({node, inline, ...props}) => 
+                            code: ({ node, inline, ...props }) =>
                               inline ? (
-                                <code 
-                                  {...props} 
-                                  className={`px-1 py-0.5 rounded font-mono text-sm ${
-                                    isMyMessage ? 'bg-blue-600' : 'bg-gray-300'
-                                  }`}
-                                />
+                                <code {...props} className={`px-1 py-0.5 rounded font-mono text-sm ${isMyMessage ? 'bg-blue-600' : 'bg-gray-300'}`} />
                               ) : (
-                                <code 
-                                  {...props} 
-                                  className={`block p-2 rounded font-mono text-sm my-1 overflow-x-auto whitespace-pre-wrap ${
-                                    isMyMessage ? 'bg-blue-600' : 'bg-gray-300'
-                                  }`}
-                                />
+                                <code {...props} className={`block p-2 rounded font-mono text-sm my-1 overflow-x-auto whitespace-pre-wrap ${isMyMessage ? 'bg-blue-600' : 'bg-gray-300'}`} />
                               ),
-                            strong: ({node, ...props}) => (
-                              <strong {...props} className="font-bold" />
-                            ),
-                            em: ({node, ...props}) => (
-                              <em {...props} className="italic" />
-                            ),
-                            del: ({node, ...props}) => (
-                              <del {...props} className="line-through" />
-                            ),
-                            ul: ({node, ...props}) => (
-                              <ul {...props} className="my-1 list-disc list-inside" />
-                            ),
-                            ol: ({node, ...props}) => (
-                              <ol {...props} className="my-1 list-decimal list-inside" />
-                            ),
-                            blockquote: ({node, ...props}) => (
-                              <blockquote 
-                                {...props} 
-                                className={`border-l-4 pl-2 my-1 ${
-                                  isMyMessage ? 'border-blue-300' : 'border-gray-400'
-                                }`}
-                              />
-                            ),
-                            h1: ({node, ...props}) => <h1 {...props} className="my-1 text-xl font-bold" />,
-                            h2: ({node, ...props}) => <h2 {...props} className="my-1 text-lg font-bold" />,
-                            h3: ({node, ...props}) => <h3 {...props} className="my-1 text-base font-bold" />,
-                            p: ({node, ...props}) => <p {...props} className="mb-1 last:mb-0" />,
-                            br: ({node, ...props}) => <br {...props} />,
                           }}
                         >
                           {msg.text}
                         </ReactMarkdown>
-
+                      </div>
                     </>
                   )}
 
-                  {/* 시간 표시 */}
-                  {hoveredMessageId === msg.id && !isEditing && (
-                    <div className={`text-xs mt-1 relative z-10 ${
-                      isMyMessage 
-                        ? 'text-blue-100' 
-                        : isDark ? 'text-gray-400' : 'text-gray-500'
-                    }`}>
-                      {msg.createdAt?.toDate().toLocaleTimeString('ko-KR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                      {msg.isEdited && (
-                        <span className="ml-1 italic">(수정됨)</span>
-                      )}
-                    </div>
-                  )}
+                  {/* 시간 표시 부분 제거 완료 */}
 
-                  {/* 길게 누르기 안내 */}
                   {isLongPressing && longPressProgress < 50 && (
                     <div className="absolute z-20 px-3 py-1 text-xs text-white -translate-x-1/2 -translate-y-1/2 bg-red-600 rounded shadow-lg top-1/2 left-1/2 whitespace-nowrap">
                       🗑️ 삭제
