@@ -66,7 +66,6 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
     if (!passwordInput.trim()) return;
 
     try {
-      // 마스터 비밀번호 확인
       if (MASTER_PASSWORD && passwordInput === MASTER_PASSWORD) {
         const roomRef = doc(db, 'rooms', passwordCheckRoom.id);
         const roomSnap = await getDoc(roomRef);
@@ -79,7 +78,6 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
         return;
       }
 
-      // 일반 비밀번호 확인
       const roomRef = doc(db, 'rooms', passwordCheckRoom.id);
       const roomSnap = await getDoc(roomRef);
       if (roomSnap.exists()) {
@@ -100,10 +98,12 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
   return (
     <div className="flex flex-col w-64 text-white bg-gray-800">
       <div className="p-4 border-b border-gray-700">
-        <h2 className="text-xl font-bold">채팅방 list</h2>
+        <h2 className="text-xl font-bold">list</h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className="flex-1 overflow-y-auto no-scrollbar"
+      >
         {rooms.map((room) => (
           <button
             key={room.id}
@@ -135,7 +135,7 @@ export default function RoomList({ currentRoom, onSelectRoom }) {
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-6 text-gray-800 bg-white rounded-lg w-96">
-            <h3 className="mb-4 text-xl font-bold">새 채팅방 만들기</h3>
+            <h3 className="mb-4 text-xl font-bold">새 채팅방 생성</h3>
 
             <div className="space-y-4">
               <div>

@@ -28,7 +28,18 @@ function App() {
 
   return (
     <ThemeProvider>
-      {!user ? <Login /> : <ChatRoom />}
+      <div style={{ 
+        overflow: 'auto',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
+      }}>
+        <style>{`
+          div::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        {!user ? <Login /> : <ChatRoom />}
+      </div>
     </ThemeProvider>
   );
 }
